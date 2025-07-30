@@ -6,5 +6,8 @@
 		{ "hook": "static:app.load", "method": "init" },
 		{ "hook": "filter:admin.header.build", "method": "addAdminNavigation" }
 	],
+	"modules": {
+		"../admin/plugins/heapdump.js": "./public/lib/admin.js"
+	},
 	"templates": "templates"
 }

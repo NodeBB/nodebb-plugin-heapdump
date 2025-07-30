@@ -20,11 +20,19 @@ plugin.init = async (params) => {
 		const path = require('path');
 		const fs = require('fs');
 		const filename = path.join(nconf.get('upload_path'), `heapdump-${Date.now()}.heapsnapshot`);
+
+		// run before taking the snapshot
+		tryGC();
+
 		const stored = v8.writeHeapSnapshot(filename, {});
+
 		res.download(stored, 'heapdump.heapsnapshot', (err) => {
 			if (err) {
 				winston.error(err.stack);
 			}
+			// run after taking the snapshot to release memory
+			tryGC();
+
 			fs.unlink(stored, (unlinkErr) => {
 				if (unlinkErr) {
 					winston.error(unlinkErr.stack);
@@ -32,7 +40,23 @@ plugin.init = async (params) => {
 			});
 		});
 	});
+
+	routeHelpers.setupApiRoute(router, 'post', '/api/admin/plugins/heapdump/gc', (req, res) => {
+		if (tryGC()) {
+			res.json({ ok: true });
+		} else {
+			res.status(500).json({ ok: false, message: 'expose-gc is not enabled' });
+		}
+	});
 };
+
+function tryGC() {
+	if (nconf.get('expose-gc') && global.gc) {
+		global.gc();
+		return true;
+	}
+	return false;
+}
 
 plugin.addAdminNavigation = (header) => {
 	header.plugins.push({
