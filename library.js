@@ -51,7 +51,7 @@ plugin.init = async (params) => {
 };
 
 function tryGC() {
-	if (nconf.get('expose-gc') && global.gc) {
+	if (typeof global.gc === 'function') {
 		global.gc();
 		return true;
 	}
