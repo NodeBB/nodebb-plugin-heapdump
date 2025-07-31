@@ -6,7 +6,6 @@ define('admin/plugins/heapdump', ['alerts'], function (alerts) {
 
 	ACP.init = function () {
 		$('#heapdump-gc-button').on('click', function () {
-			console.log('Running garbage collection...');
 			$.post(`${config.relative_path}/api/admin/plugins/heapdump/gc`, {
 				_csrf: config.csrf_token,
 			}).done(function (data) {

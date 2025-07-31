@@ -22,9 +22,13 @@ plugin.init = async (params) => {
 		const filename = path.join(nconf.get('upload_path'), `heapdump-${Date.now()}.heapsnapshot`);
 
 		// run before taking the snapshot
+		controllers.memUsage.current = process.memoryUsage();
 		tryGC();
+		controllers.memUsage.afterFirstGC = process.memoryUsage();
 
 		const stored = v8.writeHeapSnapshot(filename, {});
+
+		controllers.memUsage.afterWriteHeapSnapshot = process.memoryUsage();
 
 		res.download(stored, 'heapdump.heapsnapshot', (err) => {
 			if (err) {
@@ -32,7 +36,7 @@ plugin.init = async (params) => {
 			}
 			// run after taking the snapshot to release memory
 			tryGC();
-
+			controllers.memUsage.afterFinalGC = process.memoryUsage();
 			fs.unlink(stored, (unlinkErr) => {
 				if (unlinkErr) {
 					winston.error(unlinkErr.stack);
@@ -52,7 +56,10 @@ plugin.init = async (params) => {
 
 function tryGC() {
 	if (typeof global.gc === 'function') {
-		global.gc();
+		global.gc({
+			execution: 'sync', // synchronous execution,
+			type: 'major',
+		});
 		return true;
 	}
 	return false;
