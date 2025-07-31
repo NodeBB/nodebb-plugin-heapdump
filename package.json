@@ -1,6 +1,6 @@
 {
   "name": "nodebb-plugin-heapdump",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A plugin to get a heapdump of the NodeBB process",
   "main": "library.js",
   "repository": {
