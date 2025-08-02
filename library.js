@@ -12,6 +12,31 @@ const plugin = module.exports;
 plugin.init = async (params) => {
 	const { router /* , middleware , controllers */ } = params;
 
+	setInterval(() => {
+		const currentUsage = process.memoryUsage();
+		const ts = new Date().toISOString();
+		if (currentUsage.rss > controllers.maxUsage.rss.max) {
+			controllers.maxUsage.rss.max = currentUsage.rss;
+			controllers.maxUsage.rss.date = ts;
+		}
+		if (currentUsage.heapTotal > controllers.maxUsage.heapTotal.max) {
+			controllers.maxUsage.heapTotal.max = currentUsage.heapTotal;
+			controllers.maxUsage.heapTotal.date = ts;
+		}
+		if (currentUsage.heapUsed > controllers.maxUsage.heapUsed.max) {
+			controllers.maxUsage.heapUsed.max = currentUsage.heapUsed;
+			controllers.maxUsage.heapUsed.date = ts;
+		}
+		if (currentUsage.external > controllers.maxUsage.external.max) {
+			controllers.maxUsage.external.max = currentUsage.external;
+			controllers.maxUsage.external.date = ts;
+		}
+		if (currentUsage.arrayBuffers > controllers.maxUsage.arrayBuffers.max) {
+			controllers.maxUsage.arrayBuffers.max = currentUsage.arrayBuffers;
+			controllers.maxUsage.arrayBuffers.date = ts;
+		}
+	}, 5000);
+
 	routeHelpers.setupAdminPageRoute(router, '/admin/plugins/heapdump', controllers.renderAdminPage);
 
 	routeHelpers.setupApiRoute(router, 'get', '/api/admin/plugins/heapdump/snapshot', function (req, res) {
@@ -56,12 +81,14 @@ plugin.init = async (params) => {
 
 function tryGC() {
 	if (typeof global.gc === 'function') {
+		console.log('Running garbage collection...');
 		global.gc({
 			execution: 'sync', // synchronous execution,
 			type: 'major',
 		});
 		return true;
 	}
+	console.warn('Garbage collection is not enabled. Please run Node.js with the --expose-gc flag.');
 	return false;
 }
 

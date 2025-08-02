@@ -12,9 +12,17 @@
 					<p class="text-muted text-sm">Garbage collection is not enabled. Please set <code>expose-gc</code> in your config.json options.</p>
 				{{{ end }}}
 			</div>
-			<label>Memory Usage:</label>
-			<div class="mb-3 text-bg-light text-sm border rounded p-2">
-				<pre class="mb-0">{memoryUsage}</pre>
+			<div class="mb-3"></div>
+				<label>Max Memory Usage:</label>
+				<div class="mb-3 text-bg-light text-sm border rounded p-2">
+					<pre class="mb-0">{maxUsage}</pre>
+				</div>
+			</div>
+			<div class="mb-3"></div>
+				<label>Memory Usage:</label>
+				<div class="mb-3 text-bg-light text-sm border rounded p-2">
+					<pre class="mb-0">{memoryUsage}</pre>
+				</div>
 			</div>
 		</div>
 
