@@ -2,7 +2,7 @@
 'use strict';
 
 define('admin/plugins/heapdump', ['alerts'], function (alerts) {
-	var ACP = {};
+	const ACP = {};
 
 	ACP.init = function () {
 		$('#heapdump-gc-button').on('click', function () {

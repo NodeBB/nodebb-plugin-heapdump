@@ -1,11 +1,10 @@
 'use strict';
 
-const nconf = require.main.require('nconf');
-const winston = require.main.require('winston');
+const nconf = nodebb.require('nconf');
+const winston = nodebb.require('winston');
+const routeHelpers = nodebb.require('./src/routes/helpers');
 
 const controllers = require('./lib/controllers');
-
-const routeHelpers = require.main.require('./src/routes/helpers');
 
 const plugin = module.exports;
 
